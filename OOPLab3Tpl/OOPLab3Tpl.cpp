@@ -1,6 +1,11 @@
-﻿#include <iostream>
-#include <cmath>
+﻿#if !defined(_MSC_VER)
+#define CODING_VS_CODE
+#endif
+#include <iostream>
+#include <math.h>
+#if !defined(CODING_VS_CODE)
 #include <clocale>
+#endif
 
 using namespace std;
 
@@ -65,6 +70,18 @@ int main() {
     obj1.printInfo();
     obj2.printInfo();
     obj3.printInfo();
+    obj.setA(-5);
+    obj.printInfo();
+    obj.setA(5);
+    obj.printInfo();
+    obj.setA(2.e100);
+    obj.printInfo();
+    obj.setColor(-10);
+    obj.printInfo();
+    obj.setColor(10);
+    obj.printInfo();
+    obj.setColor(10001);
+    obj.printInfo();
     cout << " End testing \n";
     return 0;
 }
