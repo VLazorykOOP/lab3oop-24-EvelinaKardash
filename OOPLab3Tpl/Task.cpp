@@ -1,81 +1,209 @@
+#if !defined(_MSC_VER)
+#define CODING_VS_CODE
+#endif
 #include <iostream>
-#include <cmath>
+#if !defined(CODING_VS_CODE)
+#include <clocale>
+#endif
 
-using namespace std;
+// завдання 2
 
-class triangle { // клас трикутник
-    double a; // сторона
-    unsigned int color; // колір
+class Vector {
+private:
+    long* pointer;
+    int size;
+    int state; // 0 - no error, 1 - out of memory, 2 - index out of range
+
 public:
-    triangle() : a(1.0), color(0) {} // довжина сторони (a) на одиницю та колір на нуль
+    // Constructor without parameters
+    Vector() {
+        size = 1;
+        pointer = new long[size];
+        pointer[0] = 0;
+        state = 0;
+    }
 
-    explicit triangle(double ai) : a(ai), color(0) {} // довжина сторони (a) переданим значенням ai та колір на нуль
+    // Constructor with one parameter - vector size
+    Vector(int sz) {
+        size = sz;
+        pointer = new long[size];
+        for (int i = 0; i < size; ++i)
+            pointer[i] = 0;
+        state = 0;
+    }
 
-    explicit triangle(int ic) : a(1.0) { if (ic >= 0) color = ic; else color = 0; } // значення ic, але якщо ic менше за нуль
+    // Constructor with two parameters - vector size and initialization value
+    Vector(int sz, long init_value) {
+        size = sz;
+        pointer = new long[size];
+        for (int i = 0; i < size; ++i)
+            pointer[i] = init_value;
+        state = 0;
+    }
 
-    triangle(double a, int c, double a1) : a(a1) { // ініціалізує довжину сторони та колір
-        this->a = a;
-        if (c >= 0) color = c; else color = 0;
-    } // Якщо переданий колір менше за нуль, то встановлюється колір на нуль
+    // Copy constructor
+    Vector(const Vector& other) {
+        size = other.size;
+        pointer = new long[size];
+        for (int i = 0; i < size; ++i)
+            pointer[i] = other.pointer[i];
+        state = other.state;
+    }
 
-    double getA() const { return a; } // повертає довжину сторони трикутника
-
-    void setA(double a) { // встановлення нової довжини сторони трикутника
-        if (a < 0 || a > 1.e+100) {
-            cout << " Error set a \n";
-            return;
+    // Assignment operator
+    Vector& operator=(const Vector& other) {
+        if (this != &other) {
+            delete[] pointer;
+            size = other.size;
+            pointer = new long[size];
+            for (int i = 0; i < size; ++i)
+                pointer[i] = other.pointer[i];
+            state = other.state;
         }
-        this->a = a;
-    } // Перевіряється чи вказане значення в межах припустимих, в іншому випадку виводиться повідомлення про помилку
+        return *this;
+    }
 
-    double getColor() const { return color; } //  повертає колір трикутника
+    // Destructor
+    ~Vector() {
+        delete[] pointer;
+    }
 
-    void setColor(int c) { // встановлення нового коліру трикутника
-        if (c < 0 || c > 10000) {
-            cout << " Error set color \n";
-            return;
+    // Function to set a value to an element of the array
+    void setElement(int index, long value = 0) {
+        if (index >= 0 && index < size) {
+            pointer[index] = value;
+            state = 0;
+        } else {
+            state = 2; // Index out of range
         }
-        this->color = c;
-    } // Перевіряється чи вказане значення в межах припустимих, в іншому випадку виводиться повідомлення про помилку
-
-    double S()  { // площа трикутника
-        return (a * a * sqrt(3.0)) / 4;
     }
 
-    double P() { // периметр трикутника
-        return a * 3;
+    // Function to get an element of the array
+    long getElement(int index) {
+        if (index >= 0 && index < size) {
+            state = 0;
+            return pointer[index];
+        } else {
+            state = 2; // Index out of range
+            return 0;
+        }
     }
 
-    void printInfo() {
-        cout << "\n a= " << a << " color = " << color;
-        cout << " S= " << S() << " P= " << P() << endl;
+    // Function for printing the array
+    void print() {
+        for (int i = 0; i < size; ++i)
+            std::cout << pointer[i] << " ";
+        std::cout << std::endl;
     }
+
+    // Function for addition
+    Vector add(const Vector& other) {
+        if (size != other.size) {
+            state = 2; // Sizes don't match
+            return *this;
+        }
+        Vector result(size);
+        for (int i = 0; i < size; ++i)
+            result.pointer[i] = pointer[i] + other.pointer[i];
+        return result;
+    }
+
+    // Function for subtraction
+    Vector subtract(const Vector& other) {
+        if (size != other.size) {
+            state = 2; // Sizes don't match
+            return *this;
+        }
+        Vector result(size);
+        for (int i = 0; i < size; ++i)
+            result.pointer[i] = pointer[i] - other.pointer[i];
+        return result;
+    }
+
+    // Function for multiplication by unsigned int
+    Vector multiply(unsigned int scalar) {
+        Vector result(size);
+        for (int i = 0; i < size; ++i)
+            result.pointer[i] = pointer[i] * scalar;
+        return result;
+    }
+
+    // Comparison functions
+    bool lessThan(const Vector& other) {
+        if (size != other.size) {
+            state = 2; // Sizes don't match
+            return false;
+        }
+        for (int i = 0; i < size; ++i) {
+            if (pointer[i] >= other.pointer[i])
+                return false;
+        }
+        return true;
+    }
+
+    bool equalTo(const Vector& other) {
+        if (size != other.size) {
+            state = 2; // Sizes don't match
+            return false;
+        }
+        for (int i = 0; i < size; ++i) {
+            if (pointer[i] != other.pointer[i])
+                return false;
+        }
+        return true;
+    }
+
+    // Function to get the state
+    int getState() const {
+        return state;
+    }
+
+    // Function to get the number of objects created
+    static int getCount() {
+        return count;
+    }
+
+private:
+    static int count;
 };
 
-int main() {
+int Vector::count = 0;
 
-    triangle obj; // Створення об'єкту трикутника зі значеннями за замовчуванням
-    obj.printInfo();
-    double in_a; //Зчитування значень довжини сторони та коліру для створення об'єкту
-    int in_color;
-    cout << " Input side and color Icosahedron ";
-    cin >> in_a >> in_color;
-    triangle obj1(in_a), obj2(in_color), obj3(in_a, in_color, 0); // виведення інформації про три об'єкти трикутника
-    obj1.printInfo();
-    obj2.printInfo();
-    obj3.printInfo();
-    obj.setA(-5);
-    obj.printInfo();
-    obj.setA(5);
-    obj.printInfo();
-    obj.setA(2.e100);
-    obj.printInfo();
-    obj.setColor(-10);
-    obj.printInfo();
-    obj.setColor(10);
-    obj.printInfo();
-    obj.setColor(10001);
-    obj.printInfo();
-    cout << " End testing \n";
+int mainExample3() {
+    Vector v1; // Constructor without parameters
+    v1.print(); // Output: 0
+
+    Vector v2(5); // Constructor with one parameter
+    v2.print(); // Output: 0 0 0 0 0
+
+    Vector v3(3, 10); // Constructor with two parameters
+    v3.print(); // Output: 10 10 10
+
+    Vector v4 = v3; // Copy constructor
+    v4.print(); // Output: 10 10 10
+
+    Vector v5;
+    v5 = v2; // Assignment operator
+    v5.print(); // Output: 0 0 0 0 0
+
+    v5.setElement(2, 7);
+    std::cout << "Element at index 2: " << v5.getElement(2) << std::endl; // Output: Element at index 2: 7
+
+    Vector v6 = v2.add(v3);
+    v6.print(); // Output: 10 10 10 0 0
+
+    Vector v7 = v3.subtract(v2);
+    v7.print(); // Output: 10 10 10 0 0
+
+    Vector v8 = v3.multiply(2);
+    v8.print(); // Output: 20 20 20
+
+    std::cout << "State of v8: " << v8.getState() << std::endl; // Output: State of v8: 0
+
+    Vector v9(4);
+    std::cout << "State of v9: " << v9.getState() << std::endl; // Output: State of v9: 0
+
+    std::cout << "Number of objects created: " << Vector::getCount() << std::endl; // Output: Number of objects created: 9
+
     return 0;
 }
