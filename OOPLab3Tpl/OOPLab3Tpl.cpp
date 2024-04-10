@@ -69,9 +69,9 @@ int main() {
     return 0;
 }
 
-// 2 завдання
+/* 2 завдання
 
-/*class Vector {
+class Vector {
 private:
     long *array;  // вказівник на масив
     int size;     // кількість елементів у векторі
@@ -93,7 +93,7 @@ public:
 
     // Функції для отримання та встановлення значень елементів масиву
     void setValue(int index, long value = 0);  // параметр за замовчуванням
-    long getValue(int index) const;
+    long getValue(int index);
 
     // Функція для друку вектора
     void print() const;
@@ -169,7 +169,7 @@ Vector &Vector::operator=(const Vector &other) {
 }
 
 // Реалізація функції для отримання значення елементу
-long Vector::getValue(int index) const {
+long Vector::getValue(int index) {
     if (index >= 0 && index < size) {
         return array[index];
     } else {
@@ -247,7 +247,7 @@ int Vector::getState() const {
     return state;
 }
 
-int mainExample3() {
+int main(...) {
 #if !defined(CODING_VS_CODE)
     setlocale(LC_CTYPE, "ukr");
     cout << "Тестування створенного класу \n";
