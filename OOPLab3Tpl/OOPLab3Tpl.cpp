@@ -1,11 +1,6 @@
-﻿#if !defined(_MSC_VER)
-#define CODING_VS_CODE
-#endif
-#include <iostream>
+﻿#include <iostream>
 #include <math.h>
-#if !defined(CODING_VS_CODE)
 #include <clocale>
-#endif
 
 using namespace std;
 
@@ -17,7 +12,11 @@ public:
 
     explicit triangle(double ai) : a(ai), color(0) {} // довжина сторони (a) переданим значенням ai та колір на нуль
 
-    explicit triangle(int ic) : a(1.0) { if (ic >= 0) color = ic; else color = 0; } // значення ic, але якщо ic менше за нуль
+    explicit triangle(int ic) : a(1.0) {
+        if (ic >= 0)
+            color = ic;
+        else color = 0;
+    } // значення ic, але якщо ic менше за нуль
 
     triangle(double a, int c, double a1) : a(a1) { // ініціалізує довжину сторони та колір
         this->a = a;
@@ -44,7 +43,7 @@ public:
         this->color = c;
     } // Перевіряється чи вказане значення в межах припустимих, в іншому випадку виводиться повідомлення про помилку
 
-    double S()  { // площа трикутника
+    double S() { // площа трикутника
         return (a * a * sqrt(3.0)) / 4;
     }
 
